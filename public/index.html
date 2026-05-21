@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GreenCycle | Plastic Vendo</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --accent-green: #10b981;
+      --accent-blue: #3b82f6;
+      --accent-red: #ef4444;
+      --accent-orange: #f59e0b;
+      --text-main: #ffffff;
+      --text-dim: #cbd5e1;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: var(--text-main);
+      background: linear-gradient(-45deg, #0f172a, #1e293b, #064e3b, #0f172a);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Glassmorphism Container */
+    .container {
+      width: 90%;
+      max-width: 420px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 2.5rem 2rem;
+      border-radius: 24px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      border: 1px solid var(--glass-border);
+      text-align: center;
+      transition: all 0.4s ease;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .rate-info {
+      font-size: 0.85rem;
+      color: var(--accent-green);
+      font-weight: 600;
+      background: rgba(16, 185, 129, 0.15);
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* Counter Display */
+    .counter-wrapper {
+      background: rgba(0, 0, 0, 0.25);
+      padding: 2rem;
+      border-radius: 50%;
+      width: 180px;
+      height: 180px;
+      margin: 0 auto 1.5rem auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid var(--glass-border);
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 15px rgba(16, 185, 129, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .counter-wrapper.active-scan {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+      animation: pulseBorder 2s infinite;
+    }
+
+    @keyframes pulseBorder {
+      0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+      70% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+    }
+
+    .count {
+      font-size: 4.5rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1;
+      text-shadow: 0 0 10px rgba(255,255,255,0.3);
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .count.pop {
+      transform: scale(1.3);
+      color: var(--accent-green);
+    }
+
+    .count-label {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-top: 0.5rem;
+    }
+
+    /* Status and Timer */
+    .status-container {
+      min-height: 60px;
+      margin-bottom: 1.5rem;
+    }
+
+    .status {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      transition: color 0.3s ease;
+    }
+
+    #timer {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--accent-orange);
+      margin-top: 0.5rem;
+      letter-spacing: 2px;
+      text-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+    }
+
+    /* Summary Card */
+    #summary {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 1.5rem;
+      border-radius: 16px;
+      margin-bottom: 1.5rem;
+      opacity: 1;
+      transform: translateY(0);
+      transition: all 0.5s ease;
+    }
+
+    #summary h2 {
+      font-size: 1rem;
+      margin: 0 0 1rem 0;
+      color: var(--accent-green);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .summary-item {
+      background: rgba(0,0,0,0.2);
+      padding: 10px;
+      border-radius: 12px;
+    }
+
+    .summary-item span {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .summary-item strong {
+      font-size: 1.5rem;
+      color: white;
+    }
+
+    /* General Buttons */
+    button {
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Scan Group Buttons */
+    .btn-group {
+      position: relative;
+      height: 60px; /* Fixed height to prevent layout shifts */
+    }
+
+    .btn-group button {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #btn-start {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+      z-index: 2;
+    }
+
+    #btn-start:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+    }
+
+    #btn-stop {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+      z-index: 1;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.95);
+    }
+
+    #btn-stop:hover {
+      transform: scale(1) translateY(-2px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
+    }
+
+    /* Pause Session Button */
+    #btn-pause {
+      width: 100%;
+      padding: 12px 0;
+      margin-top: 15px;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    #btn-pause:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+    }
+
+    /* Active States */
+    .is-scanning #btn-start {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(1.05);
+    }
+
+    .is-scanning #btn-stop {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+      z-index: 3;
+    }
+
+    /* Utilities */
+    .hidden { 
+      opacity: 0 !important;
+      pointer-events: none !important;
+      position: absolute !important;
+      transform: translateY(-10px);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container" id="main-container">
+    <h1>Recycle & Surf</h1>
+    <div class="rate-info">♻️ 1 Bottle = 5 Minutes WiFi</div>
+
+    <div class="counter-wrapper" id="counter-ring">
+      <div class="count" id="count">0</div>
+      <div class="count-label">Bottles</div>
+    </div>
+
+    <div class="status-container">
+      <div class="status" id="status">Ready to start</div>
+      <div id="timer"></div>
+      <button id="btn-pause" class="hidden" onclick="togglePause()">Pause Timer</button>
+    </div>
+
+    <div id="summary" class="hidden">
+      <h2>Transaction Complete</h2>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span>Total Bottles</span>
+          <strong id="summary-bottles">0</strong>
+        </div>
+        <div class="summary-item">
+          <span>WiFi Time</span>
+          <strong><span id="summary-time">0</span> min</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button id="btn-start" onclick="startDetection()">Start Inserting</button>
+      <button id="btn-stop" onclick="stopDetection()">Finish & Claim Time</button>
+    </div>
+  </div>
+
+  <script>
+    let timerInterval;
+    let secondsLeft = 0;
+    let currentBottleCount = 0;
+    let isPaused = false; // New variable to track pause state
+
+    function updateCount() {
+      fetch('/api/count')
+        .then(res => res.json())
+        .then(data => {
+          const countEl = document.getElementById('count');
+          
+          if(data.count > currentBottleCount) {
+            countEl.classList.add('pop');
+            setTimeout(() => countEl.classList.remove('pop'), 300);
+          }
+          
+          currentBottleCount = data.count;
+          countEl.innerText = data.count;
+        })
+        .catch(err => console.error("Count fetch error:", err));
+    }
+
+    function startDetection() {
+      document.getElementById('main-container').classList.add('is-scanning');
+      document.getElementById('counter-ring').classList.add('active-scan');
+      
+      const statusEl = document.getElementById('status');
+      statusEl.innerText = "Scanning for bottles... Insert now!";
+      statusEl.style.color = "var(--accent-blue)";
+      
+      document.getElementById('summary').classList.add('hidden');
+      document.getElementById('summary').style.position = 'absolute'; 
+      
+      // Hide pause button if a previous session was running
+      document.getElementById('btn-pause').classList.add('hidden');
+      document.getElementById('btn-pause').style.position = 'absolute'; 
+      if (timerInterval) clearInterval(timerInterval);
+      document.getElementById('timer').innerText = "";
+      
+      currentBottleCount = 0;
+      document.getElementById('count').innerText = "0";
+
+      fetch('/api/start', { method: 'POST' }).catch(err => console.error(err));
+    }
+
+    function stopDetection() {
+      document.getElementById('main-container').classList.remove('is-scanning');
+      document.getElementById('counter-ring').classList.remove('active-scan');
+      
+      const statusEl = document.getElementById('status');
+      statusEl.innerText = "Processing tokens...";
+      statusEl.style.color = "var(--text-main)";
+
+      fetch('/api/stop', { method: 'POST' })
+      .then(res => res.json())
+      .then(data => {
+        let bottles = data.count;
+        let minutes = bottles * 5; 
+
+        document.getElementById('summary-bottles').innerText = bottles;
+        document.getElementById('summary-time').innerText = minutes;
+        
+        const summaryEl = document.getElementById('summary');
+        summaryEl.style.position = 'relative';
+        summaryEl.classList.remove('hidden');
+
+        if (bottles > 0) {
+          startInternetSession(minutes);
+        } else {
+          statusEl.innerText = "No bottles inserted. Try again!";
+          statusEl.style.color = "var(--accent-red)";
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        statusEl.innerText = "Error processing request.";
+        statusEl.style.color = "var(--accent-red)";
+      });
+    }
+
+    function startInternetSession(minutes) {
+      const statusEl = document.getElementById('status');
+      statusEl.innerText = "Internet Access Active";
+      statusEl.style.color = "var(--accent-green)";
+
+      secondsLeft = minutes * 60;
+      isPaused = false; // reset pause state
+
+      // Show and reset the pause button
+      const pauseBtn = document.getElementById('btn-pause');
+      pauseBtn.classList.remove('hidden');
+      pauseBtn.style.position = 'relative';
+      pauseBtn.innerText = "Pause Timer";
+      pauseBtn.style.background = "linear-gradient(135deg, #3b82f6, #2563eb)";
+      
+      fetch('/api/auth', { method: 'POST' }).catch(e => console.log("Auth endpoint optional", e));
+
+      if(timerInterval) clearInterval(timerInterval);
+
+      timerInterval = setInterval(() => {
+        // Skip decrementing if the timer is paused
+        if (isPaused) return;
+
+        secondsLeft--;
+        let min = Math.floor(secondsLeft / 60);
+        let sec = secondsLeft % 60;
+
+        document.getElementById('timer').innerText = 
+          `${min}:${sec.toString().padStart(2, '0')}`;
+
+        if (secondsLeft <= 0) {
+          clearInterval(timerInterval);
+          statusEl.innerText = "Session Expired";
+          statusEl.style.color = "var(--accent-red)";
+          document.getElementById('timer').innerText = "";
+          
+          // Hide pause button when expired
+          document.getElementById('btn-pause').classList.add('hidden');
+          document.getElementById('btn-pause').style.position = 'absolute';
+          
+          fetch('/api/deauth', { method: 'POST' }).catch(e => console.log(e));
+        }
+      }, 1000);
+    }
+
+    // New Pause Logic
+    function togglePause() {
+      const pauseBtn = document.getElementById('btn-pause');
+      const statusEl = document.getElementById('status');
+      
+      isPaused = !isPaused;
+
+      if (isPaused) {
+        pauseBtn.innerText = "Resume Timer";
+        pauseBtn.style.background = "linear-gradient(135deg, #f59e0b, #d97706)"; // Orange
+        statusEl.innerText = "Internet Access Paused";
+        statusEl.style.color = "var(--accent-orange)";
+        
+        // Optional: Let the backend know the user is paused
+        fetch('/api/pause', { method: 'POST' }).catch(e => console.log(e));
+      } else {
+        pauseBtn.innerText = "Pause Timer";
+        pauseBtn.style.background = "linear-gradient(135deg, #3b82f6, #2563eb)"; // Blue
+        statusEl.innerText = "Internet Access Active";
+        statusEl.style.color = "var(--accent-green)";
+        
+        // Optional: Let the backend know the user is resuming
+        fetch('/api/resume', { method: 'POST' }).catch(e => console.log(e));
+      }
+    }
+
+    function checkStatus() {
+      fetch('/api/device')
+        .then(res => res.text())
+        .then(data => {
+          const statusEl = document.getElementById('status');
+          if (document.getElementById('main-container').classList.contains('is-scanning')) {
+            if (data === "ACCEPT") {
+              statusEl.innerText = "✅ Bottle Accepted!";
+              statusEl.style.color = "var(--accent-green)";
+            } else if (data === "REJECT") {
+              statusEl.innerText = "❌ Invalid Object Detected";
+              statusEl.style.color = "var(--accent-red)";
+            } else {
+              statusEl.innerText = "Scanning for bottles... Insert now!";
+              statusEl.style.color = "var(--accent-blue)";
+            }
+          }
+        })
+        .catch(err => console.log("Device status check skipped"));
+    }
+
+    // Polling intervals
+    setInterval(updateCount, 1000);
+    setInterval(checkStatus, 2000);
+    
+    // Initial fetch
+    updateCount();
+  </script>
+</body>
+</html>
